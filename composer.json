@@ -1,0 +1,30 @@
+{
+  "name": "jncinet/qihucms-role",
+  "description": "qihucms role.",
+  "keywords": [
+    "laravel",
+    "qihucms",
+    "role"
+  ],
+  "homepage": "https://www.qihucms.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "zhangye",
+      "email": "y@qilephp.com"
+    }
+  ],
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Qihucms\\Role\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Qihucms\\Role\\RoleServiceProvider"
+      ]
+    }
+  }
+}
