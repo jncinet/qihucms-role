@@ -5,6 +5,7 @@ namespace Qihucms\Role\Controllers\Api;
 use App\Http\Controllers\Api\ApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Qihucms\Currency\Currency;
 use Qihucms\Qualification\Models\QualificationCo;
 use Qihucms\Qualification\Models\QualificationPa;
@@ -88,7 +89,7 @@ class RoleController extends ApiController
             return new RoleResource($role);
         }
 
-        return $this->jsonResponse(['数据不存在'], '', 422);
+        return $this->jsonResponse([__('role::message.data_does_not_exist')], '', 422);
     }
 
     /**
@@ -99,29 +100,29 @@ class RoleController extends ApiController
      */
     public function store(StoreRequest $request)
     {
-        $user = \Auth::user();
+        $user = Auth::user();
         $role_id = $request->input('role_id');
 
         $role = Role::find($role_id);
 
         if ($user->isRole($role->slug)) {
-            return $this->jsonResponse(['已经开通过了'], '', 422);
+            return $this->jsonResponse([__('role::message.has_been_opened')], '', 422);
         }
 
         if ($role->is_qualification_pa
             && QualificationPa::where('user_id', $user->id)->where('status', 2)->doesntExist()) {
-            return $this->jsonResponse(['请先完成个人认证'], '', 422);
+            return $this->jsonResponse([__('role::message.is_qualification_pa')], '', 422);
         }
 
         if ($role->is_qualification_co
             && QualificationCo::where('user_id', $user->id)->where('status', 2)->doesntExist()) {
-            return $this->jsonResponse(['请先完成企业认证'], '', 422);
+            return $this->jsonResponse([__('role::message.is_qualification_co')], '', 422);
         }
 
         if ($role->price > 0) {
             // 支付费用
             $result = Currency::expend($user->id, $role->currency_type_id, $role->price,
-                'add_user_role', $role_id, '添加会员角色');
+                'add_user_role', $role_id, __('role::message.price_desc'));
 
             if ($result === 100) {
 
@@ -130,19 +131,22 @@ class RoleController extends ApiController
                 } else {
                     $expires = null;
                 }
-//                return $expires;
 
                 $user->roles()->attach($role->id, ['expires' => $expires]);
 
-                return $this->jsonResponse(['status' => 'success']);
+                return $this->jsonResponse(['user_id' => Auth::id(), 'role_id' => $role_id]);
             } else {
-                return $this->jsonResponse([trans('currency::message.' . $result)], '支付失败', 422);
+                return $this->jsonResponse(
+                    [trans('currency::message.' . $result)],
+                    __('role::message.pay_fail'),
+                    422
+                );
             }
         } else {
 
             $user->roles()->attach($role->id, ['expires' => null]);
 
-            return $this->jsonResponse(['status' => 'success']);
+            return $this->jsonResponse(['user_id' => Auth::id(), 'role_id' => $role_id]);
         }
     }
 }

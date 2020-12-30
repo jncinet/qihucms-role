@@ -2,13 +2,13 @@
 
 namespace Qihucms\Role\Controllers\Admin;
 
+use App\Admin\Controllers\Controller;
 use Qihucms\Role\Models\Permission;
-use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Show;
 
-class PermissionController extends AdminController
+class PermissionController extends Controller
 {
     /**
      * Title for current resource.
@@ -74,7 +74,7 @@ class PermissionController extends AdminController
         $form->text('slug', __('role::permission.slug'));
         $form->number('amount', __('role::permission.amount'))
             ->default(0)
-            ->help('默认为0时，不限制数，常用于限制发布条数，或读取条数');
+            ->help('role::permission.amount_help');
 
         return $form;
     }

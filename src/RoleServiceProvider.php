@@ -31,6 +31,9 @@ class RoleServiceProvider extends ServiceProvider
         }
 
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'role');
+        $this->publishes([
+            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/search'),
+        ]);
 
         $this->loadRoutesFrom(__DIR__ . '/../routes.php');
 
