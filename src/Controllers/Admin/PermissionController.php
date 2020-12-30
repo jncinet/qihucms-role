@@ -74,7 +74,7 @@ class PermissionController extends Controller
         $form->text('slug', __('role::permission.slug'));
         $form->number('amount', __('role::permission.amount'))
             ->default(0)
-            ->help('role::permission.amount_help');
+            ->help(__('role::permission.amount_help'));
 
         return $form;
     }
